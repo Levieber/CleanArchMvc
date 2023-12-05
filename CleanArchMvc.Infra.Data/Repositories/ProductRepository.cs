@@ -23,12 +23,6 @@ public class ProductRepository : IProductRepository
 
     public async Task<Product> GetByIdAsync(int? id)
     {
-        var product = await _context.Products.FindAsync(id);
-        return product;
-    }
-
-    public async Task<Product> GetProductCategoryAsync(int? id)
-    {
         var product = await _context.Products.Include(p => p.Category).SingleOrDefaultAsync(p => p.Id == id);
         return product;
     }
