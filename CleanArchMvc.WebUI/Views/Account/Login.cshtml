@@ -1,0 +1,46 @@
+﻿@model CleanArchMvc.WebUI.ViewModels.LoginViewModel
+
+@{
+    ViewData["Title"] = "Log In";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form asp-action="Login" method="post">
+    <div>
+        <input type="hidden" asp-for="ReturnUrl" />
+        <hr />
+        <div asp-validation-summary="All" class="text-danger"></div>
+
+        <div class="mb-3">
+            <label asp-for="Email" class="col-md-2 form-label"></label>
+            <div class="col-md-10">
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Password" class="col-md-2 form-label"></label>
+            <div class="col-md-10">
+                <input asp-for="Password" class="form-control" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <div class="col-md-10">
+                <input type="submit" value="Log in" class="btn btn-success" />
+            </div>
+        </div>
+
+        <p>
+            <a asp-action="Register">Register as a new user?</a>
+        </p>
+    </div>
+</form>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

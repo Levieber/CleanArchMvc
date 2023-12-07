@@ -1,3 +1,4 @@
+using CleanArchMvc.Domain.Account;
 using CleanArchMvc.Infra.IoC;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,6 +21,16 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+
+using (var serviceScope = app.Services.CreateScope())
+{
+    var seedUserRoleInitial = serviceScope.ServiceProvider.GetRequiredService<ISeedUserRoleInitial>();
+
+    seedUserRoleInitial.SeedRoles();
+    seedUserRoleInitial.SeedUsers();
+}
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 
