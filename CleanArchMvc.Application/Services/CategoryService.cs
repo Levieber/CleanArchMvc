@@ -17,10 +17,10 @@ public class CategoryService : ICategoryService
         _mapper = mapper;
     }
 
-    public async Task Add(CategoryDTO categoryDto)
+    public async Task<CategoryDTO> Add(CategoryDTO categoryDto)
     {
         var categoryEntity = _mapper.Map<Category>(categoryDto);
-        await _categoryRepository.CreateAsync(categoryEntity);
+        return _mapper.Map<CategoryDTO>(await _categoryRepository.CreateAsync(categoryEntity));
     }
 
     public async Task<CategoryDTO> GetByIdAsync(int? id)

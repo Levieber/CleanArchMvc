@@ -18,10 +18,10 @@ public class ProductService : IProductService
         _mediator = mediator;
     }
 
-    public async Task Add(ProductDTO productDto)
+    public async Task<ProductDTO> Add(ProductDTO productDto)
     {
         var productCreateCommand = _mapper.Map<ProductCreateCommand>(productDto);
-        await _mediator.Send(productCreateCommand);
+        return _mapper.Map<ProductDTO>(await _mediator.Send(productCreateCommand));
     }
 
     public async Task<ProductDTO> GetByIdAsync(int? id)
