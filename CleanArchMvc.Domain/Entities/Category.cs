@@ -4,8 +4,8 @@ namespace CleanArchMvc.Domain.Entities;
 
 public sealed class Category : BaseEntity
 {
-    public string Name { get; private set; }
-    public ICollection<Product> Products { get; set; }
+    public string Name { get; private set; } = string.Empty;
+    public ICollection<Product> Products { get; set; } = new List<Product>();
 
     public Category(string name)
     {

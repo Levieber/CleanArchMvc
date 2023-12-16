@@ -23,7 +23,9 @@ public static class DependencyInjectionJWT
                     ValidateIssuerSigningKey = true,
                     ValidIssuer = configuration["Jwt:Issuer"],
                     ValidAudience = configuration["Jwt:Audience"],
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:SecretKey"])),
+                    IssuerSigningKey = new SymmetricSecurityKey(
+                        Encoding.UTF8.GetBytes(configuration["Jwt:SecretKey"] ?? throw new ArgumentException("Jwt Secret Key must be set"))
+                    ),
                     ClockSkew = TimeSpan.Zero,
                 }; 
             });

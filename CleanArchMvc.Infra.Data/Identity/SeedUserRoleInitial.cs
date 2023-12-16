@@ -3,20 +3,11 @@ using Microsoft.AspNetCore.Identity;
 
 namespace CleanArchMvc.Infra.Data.Identity;
 
-public class SeedUserRoleInitial : ISeedUserRoleInitial
+public class SeedUserRoleInitial(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager) : ISeedUserRoleInitial
 {
-    private UserManager<ApplicationUser> _userManager;
-    private RoleManager<IdentityRole> _roleManager;
-
-    public SeedUserRoleInitial(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
-    {
-        _userManager = userManager;
-        _roleManager = roleManager;
-    }
-
     public void SeedUsers()
     {
-        if (_userManager.FindByEmailAsync("user@localhost").Result == null)
+        if (userManager.FindByEmailAsync("user@localhost").Result == null)
         {
             ApplicationUser user = new()
             {
@@ -29,15 +20,15 @@ public class SeedUserRoleInitial : ISeedUserRoleInitial
                 SecurityStamp = Guid.NewGuid().ToString()
             };
 
-            var result = _userManager.CreateAsync(user, "Senha123!").Result;
+            var result = userManager.CreateAsync(user, "Senha123!").Result;
 
             if (result.Succeeded)
             {
-                _userManager.AddToRoleAsync(user, "User").Wait();
+                userManager.AddToRoleAsync(user, "User").Wait();
             }
         }
 
-        if (_userManager.FindByEmailAsync("admin@localhost").Result == null)
+        if (userManager.FindByEmailAsync("admin@localhost").Result == null)
         {
             ApplicationUser admin = new()
             {
@@ -50,18 +41,18 @@ public class SeedUserRoleInitial : ISeedUserRoleInitial
                 SecurityStamp = Guid.NewGuid().ToString()
             };
 
-            var result = _userManager.CreateAsync(admin, "Senha123!").Result;
+            var result = userManager.CreateAsync(admin, "Senha123!").Result;
 
             if (result.Succeeded)
             {
-                _userManager.AddToRoleAsync(admin, "Admin").Wait();
+                userManager.AddToRoleAsync(admin, "Admin").Wait();
             }
         }
     }
 
     public void SeedRoles()
     {
-        if (!_roleManager.RoleExistsAsync("User").Result)
+        if (!roleManager.RoleExistsAsync("User").Result)
         {
             IdentityRole role = new()
             {
@@ -69,10 +60,10 @@ public class SeedUserRoleInitial : ISeedUserRoleInitial
                 NormalizedName = "USER"
             };
 
-            _roleManager.CreateAsync(role).Wait();
+            roleManager.CreateAsync(role).Wait();
         }
 
-        if (!_roleManager.RoleExistsAsync("Admin").Result)
+        if (!roleManager.RoleExistsAsync("Admin").Result)
         {
             IdentityRole role = new()
             {
@@ -80,7 +71,7 @@ public class SeedUserRoleInitial : ISeedUserRoleInitial
                 NormalizedName = "ADMIN"
             };
 
-            _roleManager.CreateAsync(role).Wait();
+            roleManager.CreateAsync(role).Wait();
         }
     }
 }

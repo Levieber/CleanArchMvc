@@ -10,21 +10,12 @@ namespace CleanArchMvc.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class TokenController : ControllerBase
+public class TokenController(IAuthenticate authenticateService, IConfiguration configuration) : ControllerBase
 {
-    private readonly IAuthenticate _authenticateService;
-    private readonly IConfiguration _configuration;
-
-    public TokenController(IAuthenticate authenticateService, IConfiguration configuration)
-    {
-        _authenticateService = authenticateService;
-        _configuration = configuration;
-    }
-
     [HttpPost("register")]
     public async Task<ActionResult> Register(RegisterModel model)
     {
-        var result = await _authenticateService.RegisterUserAsync(model.Email, model.Password);
+        var result = await authenticateService.RegisterUserAsync(model.Email, model.Password);
 
         if (result)
         {
@@ -40,7 +31,7 @@ public class TokenController : ControllerBase
     [HttpPost("login")]
     public async Task<ActionResult<UserToken>> Login(LoginModel model)
     {
-        var result = await _authenticateService.AuthenticateAsync(model.Email, model.Password);
+        var result = await authenticateService.AuthenticateAsync(model.Email, model.Password);
 
         if(result)
         {
@@ -54,19 +45,19 @@ public class TokenController : ControllerBase
 
     private UserToken GenerateToken(LoginModel model)
     {
-        Claim[] claims = new[]
-        {
+        Claim[] claims =
+        [
             new Claim("email", model.Email),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-        };
+        ];
 
-        var privateKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:SecretKey"]));
+        var privateKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:SecretKey"] ?? throw new ArgumentException("Jwt Secret Key must be set")));
 
         var credentials = new SigningCredentials(privateKey, SecurityAlgorithms.HmacSha256);
 
         var expiration = DateTime.UtcNow.AddMinutes(10);
 
-        JwtSecurityToken token = new(issuer: _configuration["Jwt:Issuer"], audience: _configuration["Jwt:Audience"], claims: claims, signingCredentials: credentials, expires: expiration);
+        JwtSecurityToken token = new(issuer: configuration["Jwt:Issuer"], audience: configuration["Jwt:Audience"], claims: claims, signingCredentials: credentials, expires: expiration);
 
         return new UserToken()
         {

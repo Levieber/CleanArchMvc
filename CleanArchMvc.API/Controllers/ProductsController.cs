@@ -8,26 +8,19 @@ namespace CleanArchMvc.API.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 [Authorize]
-public class ProductsController : ControllerBase
+public class ProductsController(IProductService productService) : ControllerBase
 {
-    private readonly IProductService _productService;
-
-    public ProductsController(IProductService productService)
-    {
-        _productService = productService;
-    }
-
     [HttpGet]
     public async Task<ActionResult<IEnumerable<ProductDTO>>> Index()
     {
-        var products = await _productService.GetProductsAsync();
+        var products = await productService.GetProductsAsync();
         return Ok(products);
     }
 
     [HttpGet("{id:int}")]
     public async Task<ActionResult<ProductDTO>> Show(int id)
     {
-        var product = await _productService.GetByIdAsync(id);
+        var product = await productService.GetByIdAsync(id);
 
         if (product is null)
         {
@@ -45,7 +38,7 @@ public class ProductsController : ControllerBase
             return BadRequest("Invalid data");
         }
 
-        var product = await _productService.Add(productDto);
+        var product = await productService.Add(productDto);
 
         return CreatedAtAction(nameof(Show), new { id = product.Id }, product);
     }
@@ -53,14 +46,14 @@ public class ProductsController : ControllerBase
     [HttpPut]
     public async Task<ActionResult> Update(ProductDTO productDto)
     {
-        var product = await _productService.GetByIdAsync(productDto.Id);
+        var product = await productService.GetByIdAsync(productDto.Id);
 
         if (product is null)
         {
             return NotFound("Product not found!");
         }
 
-        await _productService.Update(product);
+        await productService.Update(product);
 
         return NoContent();
     }
@@ -68,14 +61,14 @@ public class ProductsController : ControllerBase
     [HttpDelete("{id:int}")]
     public async Task<ActionResult> Delete(int id)
     {
-        var product = await _productService.GetByIdAsync(id);
+        var product = await productService.GetByIdAsync(id);
 
         if (product is null)
         {
             return NotFound("Product not found!");
         }
 
-        await _productService.Remove(product.Id);
+        await productService.Remove(product.Id);
 
         return NoContent();
     }

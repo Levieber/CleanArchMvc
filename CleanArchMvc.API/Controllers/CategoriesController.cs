@@ -8,26 +8,19 @@ namespace CleanArchMvc.API.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 [Authorize]
-public class CategoriesController : ControllerBase
+public class CategoriesController(ICategoryService categoryService) : ControllerBase
 {
-    private readonly ICategoryService _categoryService;
-
-    public CategoriesController(ICategoryService categoryService)
-    {
-        _categoryService = categoryService;
-    }
-
     [HttpGet]
     public async Task<ActionResult<IEnumerable<CategoryDTO>>> Index()
     {
-        var categories = await _categoryService.GetCategoriesAsync();
+        var categories = await categoryService.GetCategoriesAsync();
         return Ok(categories);
     }
 
     [HttpGet("{id:int}")]
     public async Task<ActionResult<CategoryDTO>> Show(int id)
     {
-        var category = await _categoryService.GetByIdAsync(id);
+        var category = await categoryService.GetByIdAsync(id);
 
         if (category is null)
         {
@@ -45,7 +38,7 @@ public class CategoriesController : ControllerBase
             return BadRequest("Invalid data");
         }
 
-        var category = await _categoryService.Add(categoryDto);
+        var category = await categoryService.Add(categoryDto);
 
         return CreatedAtAction(nameof(Show), new { id = category.Id }, category);
     }
@@ -53,14 +46,14 @@ public class CategoriesController : ControllerBase
     [HttpPut]
     public async Task<ActionResult> Update(CategoryDTO categoryDto)
     {
-        var category = await _categoryService.GetByIdAsync(categoryDto.Id);
+        var category = await categoryService.GetByIdAsync(categoryDto.Id);
 
         if (category is null)
         {
             return NotFound("Category not found!");
         }
 
-        await _categoryService.Update(category);
+        await categoryService.Update(category);
 
         return NoContent();
     }
@@ -68,14 +61,14 @@ public class CategoriesController : ControllerBase
     [HttpDelete("{id:int}")]
     public async Task<ActionResult> Delete(int id)
     {
-        var category = await _categoryService.GetByIdAsync(id);
+        var category = await categoryService.GetByIdAsync(id);
 
         if (category is null)
         {
             return NotFound("Category not found!");
         }
 
-        await _categoryService.Remove(category.Id);
+        await categoryService.Remove(category.Id);
 
         return NoContent();
     }

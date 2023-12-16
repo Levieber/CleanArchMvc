@@ -6,28 +6,19 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace CleanArchMvc.WebUI.Controllers
 {
-    public class ProductsController : Controller
+    public class ProductsController(IProductService productService, ICategoryService categoryService) : Controller
     {
-        private IProductService _productService;
-        private ICategoryService _categoryService;
-
-        public ProductsController(IProductService productService, ICategoryService categoryService)
-        {
-            _productService = productService;
-            _categoryService = categoryService;
-        }
-
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var products = await _productService.GetProductsAsync();
+            var products = await productService.GetProductsAsync();
             return View(products);
         }
 
         [HttpGet]
         public async Task<IActionResult> Create()
         {
-            ViewBag.CategoryId = new SelectList(await _categoryService.GetCategoriesAsync(), "Id", "Name");
+            ViewBag.CategoryId = new SelectList(await categoryService.GetCategoriesAsync(), "Id", "Name");
             return View();
         }
 
@@ -36,24 +27,22 @@ namespace CleanArchMvc.WebUI.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _productService.Add(product);
+                await productService.Add(product);
                 return RedirectToAction(nameof(Index));
             }
 
-            ViewBag.CategoryId = new SelectList(await _categoryService.GetCategoriesAsync(), "Id", "Name");
+            ViewBag.CategoryId = new SelectList(await categoryService.GetCategoriesAsync(), "Id", "Name");
             return View(product);
         }
 
         [HttpGet]
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(int id)
         {
-            if (id is null) return NotFound();
-
-            var product = await _productService.GetByIdAsync(id);
+            var product = await productService.GetByIdAsync(id);
 
             if (product is null) return NotFound();
 
-            ViewBag.CategoryId = new SelectList(await _categoryService.GetCategoriesAsync(), "Id", "Name");
+            ViewBag.CategoryId = new SelectList(await categoryService.GetCategoriesAsync(), "Id", "Name");
 
             return View(product);
         }
@@ -63,22 +52,20 @@ namespace CleanArchMvc.WebUI.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _productService.Update(product);
+                await productService.Update(product);
                 return RedirectToAction(nameof(Index));
             }
 
-            ViewBag.CategoryId = new SelectList(await _categoryService.GetCategoriesAsync(), "Id", "Name");
+            ViewBag.CategoryId = new SelectList(await categoryService.GetCategoriesAsync(), "Id", "Name");
 
             return View(product);
         }
 
         [Authorize(Roles = "Admin")]
         [HttpGet]
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(int id)
         {
-            if (id is null) return NotFound();
-
-            var product = await _productService.GetByIdAsync(id);
+            var product = await productService.GetByIdAsync(id);
 
             if (product is null) return NotFound();
 
@@ -87,18 +74,16 @@ namespace CleanArchMvc.WebUI.Controllers
 
         [Authorize(Roles = "Admin")]
         [HttpPost, ActionName("Delete")]
-        public async Task<IActionResult> DeleteConfirmed(int? id)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            await _productService.Remove(id);
+            await productService.Remove(id);
             return RedirectToAction(nameof(Index));
         }
 
         [HttpGet]
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(int id)
         {
-            if (id is null) return NotFound();
-
-            var product = await _productService.GetByIdAsync(id);
+            var product = await productService.GetByIdAsync(id);
 
             if (product is null) return NotFound();
 

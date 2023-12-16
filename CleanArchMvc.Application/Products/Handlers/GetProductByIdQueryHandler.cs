@@ -5,17 +5,10 @@ using MediatR;
 
 namespace CleanArchMvc.Application.Products.Handlers;
 
-public class GetProductByIdQueryHandler : IRequestHandler<GetProductByIdQuery, Product>
+public class GetProductByIdQueryHandler(IProductRepository productRepository) : IRequestHandler<GetProductByIdQuery, Product?>
 {
-    private IProductRepository _productRepository;
-
-    public GetProductByIdQueryHandler(IProductRepository productRepository)
+    public async Task<Product?> Handle(GetProductByIdQuery request, CancellationToken cancellationToken)
     {
-        _productRepository = productRepository;
-    }
-
-    public async Task<Product> Handle(GetProductByIdQuery request, CancellationToken cancellationToken)
-    {
-        return await _productRepository.GetByIdAsync(request.Id);
+        return await productRepository.GetByIdAsync(request.Id);
     }
 }

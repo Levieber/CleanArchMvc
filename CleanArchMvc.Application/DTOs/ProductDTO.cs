@@ -13,12 +13,12 @@ public class ProductDTO
     [Required(ErrorMessage = "Name is required")]
     [MinLength(3)]
     [MaxLength(100)]
-    public string Name { get; set; }
+    public required string Name { get; set; }
 
     [Required(ErrorMessage = "Description is required")]
     [MinLength(5)]
     [MaxLength(200)]
-    public string Description { get; set; }
+    public required string Description { get; set; }
 
     [Required(ErrorMessage = "Price is required")]
     [Column(TypeName = "decimal(18,2)")]

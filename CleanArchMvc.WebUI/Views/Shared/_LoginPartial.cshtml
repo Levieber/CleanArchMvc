@@ -1,4 +1,4 @@
-﻿@if (Context.User.Identity.IsAuthenticated)
+﻿@if (Context.User.Identity is not null && Context.User.Identity.IsAuthenticated)
 {
     <li class="nav-item">
         <a class="nav-link text-capitalize" asp-area="" asp-controller="Account" asp-action="Logout" style="color: blue;">

@@ -4,15 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CleanArchMvc.WebUI.Controllers;
 
-public class AccountController : Controller
+public class AccountController(IAuthenticate authenticateService) : Controller
 {
-    private IAuthenticate _authenticateService;
-
-    public AccountController(IAuthenticate authenticateService)
-    {
-        _authenticateService = authenticateService;
-    }
-
     [HttpGet]
     public IActionResult Login(string? returnUrl)
     {
@@ -22,7 +15,7 @@ public class AccountController : Controller
     [HttpPost]
     public async Task<IActionResult> Login(LoginViewModel model)
     {
-        var result = await _authenticateService.AuthenticateAsync(model.Email, model.Password);
+        var result = await authenticateService.AuthenticateAsync(model.Email, model.Password);
 
         if (result)
         {
@@ -48,7 +41,7 @@ public class AccountController : Controller
     [HttpPost]
     public async Task<IActionResult> Register(RegisterViewModel model)
     {
-        var result = await _authenticateService.RegisterUserAsync(model.Email, model.Password);
+        var result = await authenticateService.RegisterUserAsync(model.Email, model.Password);
 
         if (result)
         {
@@ -63,7 +56,7 @@ public class AccountController : Controller
 
     public async Task<IActionResult> Logout()
     {
-        await _authenticateService.Logout();
+        await authenticateService.Logout();
         return Redirect("/Account/Login");
     }
 }
